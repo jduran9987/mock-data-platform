@@ -17,23 +17,6 @@ Returns a paginated list of customers, sorted by creation date (newest first).
 | `ending_before` | string | — | Cursor for backward pagination (customer ID) |
 | `email` | string | — | Filter by exact email match |
 
-### `GET /v1/customers/{customer_id}`
-
-Retrieves a single customer by ID.
-
-**Error (404):**
-
-```json
-{
-  "error": {
-    "type": "invalid_request_error",
-    "message": "No such customer: cus_xxx",
-    "param": "id",
-    "code": "resource_missing"
-  }
-}
-```
-
 ## Field Reference
 
 ### Customer Object
