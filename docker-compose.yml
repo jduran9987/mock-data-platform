@@ -1,0 +1,36 @@
+services:
+  payments-vendor-db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: payments
+      POSTGRES_PASSWORD: payments
+      POSTGRES_DB: payments_vendor
+    ports:
+      - "5433:5432"
+    volumes:
+      - payments_vendor_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments -d payments_vendor"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  payments-vendor-api:
+    build:
+      context: sources/apis/payments-vendor
+      dockerfile: Dockerfile
+    ports:
+      - "8010:8000"
+    environment:
+      DATABASE_URL: postgresql://payments:payments@payments-vendor-db:5432/payments_vendor
+    depends_on:
+      payments-vendor-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  payments_vendor_db_data:
